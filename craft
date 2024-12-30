@@ -1,0 +1,36 @@
+#!/usr/bin/env bash
+
+# check if couch folder exists
+if [ ! -f couch/config.php ]; then
+	echo "CouchCMS not found. Run spark.sh first."
+	exit 1
+fi
+
+command=$1 && shift
+
+case $command in 
+	template)
+
+		template_name=$1
+		lowercased_hyphenated_template_name=$(echo "$template_name" | tr '[:upper:]' '[:lower:]' | tr ' ' '-')
+
+		# check if template already exists
+		if [ -f "templates/$lowercased_hyphenated_template_name.php" ]; then
+			echo "Template already exists"
+			exit 1
+		fi
+
+		clonable=false
+		routable=false
+
+		# create template
+
+
+		;;
+
+	*)
+		echo "Invalid command"
+		exit 1
+		;;
+
+esac
