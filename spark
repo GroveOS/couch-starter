@@ -1,0 +1,64 @@
+#!/usr/bin/env bash
+
+# if no $1 provided, fresh install
+if [ -z "$1" ]; then
+
+	# prompt for "Install new CouchCMS site?" (y/n)
+	read -rp "Install new CouchCMS site? (y/n): " install_response
+
+	# if "y"
+	if [ "$install_response" = "y" ]; then
+
+		# Clone CouchCMS
+		git clone https://github.com/CouchCMS/CouchCMS && mv CouchCMS/couch ./ && rm -rf CouchCMS
+
+		# Setup extended users config file
+		mv couch/addons/extended/config.example.php couch/addons/extended/config.php
+
+		# Move Spark config and kfunctions files
+		mv spark.config.php couch/config.php
+		mv spark.kfunctions.php couch/addons/kfunctions.php
+
+		# Set database credentials
+		read -rp "Enter database name: " db_name
+		read -rp "Enter database username (default: root): " db_user_input
+		db_user=${db_user_input:-root}
+		read -rp "Enter database password (default: root): " db_pass_input
+		db_pass=${db_pass_input:-root}
+
+		# Set site URL
+		this_dir=$(basename "$PWD")
+		site_url="http://localhost:8888/CouchCMS/$this_dir/"
+
+		# Prompt to remove footer link
+		read -rp "Remove footer link? (y/n, default: n): " footer_response
+		footer_response=${footer_response:-n}
+
+		case "${footer_response:-n}" in
+			[Yy] ) remove_footer_link="1" ;;
+			* ) remove_footer_link="0" ;;
+		esac
+
+		# find and replace in couch/config.php
+		sed -i '' "s|<spark-remove-footer-link>|${remove_footer_link}|" couch/config.php
+		sed -i '' "s|<spark-db-name>|${db_name}|" couch/config.php
+		sed -i '' "s|<spark-db-user>|${db_user}|" couch/config.php
+		sed -i '' "s|<spark-db-pass>|${db_pass}|" couch/config.php
+		sed -i '' "s|<spark-site-url>|${site_url}|" couch/config.php
+
+		exit 0
+
+	else
+
+		# if "n"
+		echo "Exiting..."
+		exit 0
+
+	fi
+
+fi
+
+
+command=$1
+
+# we'll add commands here later, such as "spark new template <template-name> (clonable) (routable)"
