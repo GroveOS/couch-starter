@@ -3,6 +3,8 @@
 # if no $1 provided, fresh install
 if [ -z "$1" ]; then
 
+	cp -r couch-starter/* ./
+
 	# prompt for "Install new CouchCMS site?" (y/n)
 	read -rp "Install new CouchCMS site? (y/n): " install_response
 
@@ -45,6 +47,8 @@ if [ -z "$1" ]; then
 		sed -i '' "s|<spark-db-user>|${db_user}|" couch/config.php
 		sed -i '' "s|<spark-db-pass>|${db_pass}|" couch/config.php
 		sed -i '' "s|<spark-site-url>|${site_url}|" couch/config.php
+
+		rm -rf couch-starter
 
 		exit 0
 
